@@ -1,0 +1,1 @@
+// register_styles.ts - criado automaticamente
