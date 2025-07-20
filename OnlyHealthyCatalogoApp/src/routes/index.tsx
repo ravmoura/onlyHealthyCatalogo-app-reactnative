@@ -17,6 +17,7 @@ import { NativeStackNavigationOptions } from '@react-navigation/native-stack';
 import { Button, Icon } from 'react-native-elements';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import SearchCepScreen from '../screens/SearchCepScreen';
 
 
 const AuthStack = createNativeStackNavigator<AuthStackParamList>();
@@ -41,11 +42,12 @@ export function Routes() {
           <AppStack.Screen name="Login" component={LoginScreen} options={{ title: "Login" }} />
           <AppStack.Screen name="Register" component={RegisterScreen} options={{ title: "Cadastro de Usuários" }} />
           <AppStack.Screen name="StoreRegister" component={StoreRegisterScreen}  options={{ title: "Cadastro de Restaurantes" }} />              
+          <AppStack.Screen name="SearchCep" component={SearchCepScreen}  options={{ title: "Buscar CEP" }} />              
           <AppStack.Screen name="ProductRegister" component={ProductRegisterScreen} options={{ title: "Cadastro de Pratos" }}/>
           <AppStack.Screen name="ProductList" component={ProductListScreen} options={{ title:"Cardápio" }}/>
           <AppStack.Screen name="StoreList" component={StoreListScreen} options={{ title:"Lista de Restaurantes " }}/>
         </AppStack.Navigator>
-      {/* ) : (
+      {/* ) : 
         <AuthStack.Navigator id={undefined} >
           <AppStack.Screen name="Home" component={HomeScreen} />
           <AuthStack.Screen name="Login" component={LoginScreen} />

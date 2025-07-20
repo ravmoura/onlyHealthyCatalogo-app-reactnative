@@ -216,7 +216,7 @@ export const ProductRegisterScreen = ({ route, navigation }: Props) => {
                 {imagem !== '' &&  <Image source={{ uri: imagem }} style={global_styles.logo} />}                                  
             </View>            
         </ScrollView>
-        <View style={{justifyContent: 'flex-start', alignItems: 'center', backgroundColor:'#aaa989'}}>                                    
+        <View style={{justifyContent: 'flex-start', alignItems: 'center'}}>                                    
             <Button title="Selecionar Imagem" onPress={selecionarImagemGaleria} />                                                    
             {loading ? (
               <ActivityIndicator size="large" color="#2563EB" style={{ marginTop: 16 }} />

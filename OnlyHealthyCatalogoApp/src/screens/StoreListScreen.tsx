@@ -12,18 +12,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../types/navigation';
-
-interface Loja {
-  id: string;
-  nome: string;
-  endereco: string;
-  cnpj: string;
-  latitude: string;
-  longitude: string;
-}
+import { Restaurant } from '../types/restaurant';
+import { storeList_styles } from '../styles/storeList_styles';
 
 export const StoreListScreen = () => {
-  const [lojas, setLojas] = useState<Loja[]>([]);
+  const [restaurants, setRestaurantes] = useState<Restaurant[]>([]);
   const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
 
   useEffect(() => {
@@ -33,7 +26,7 @@ export const StoreListScreen = () => {
   const carregarLojas = async () => {
     const data = await AsyncStorage.getItem('@OnlyHealthyCatalogoApp:lojas');
     if (data) {
-      setLojas(JSON.parse(data));
+        setRestaurantes(JSON.parse(data));
     }
   };
 
@@ -44,32 +37,32 @@ export const StoreListScreen = () => {
         text: 'Excluir',
         style: 'destructive',
         onPress: async () => {
-          const atualizadas = lojas.filter((l) => l.id !== id);
-          setLojas(atualizadas);
+          const atualizadas = restaurants.filter((l) => l.id !== id);
+          setRestaurantes(atualizadas);
           await AsyncStorage.setItem('@OnlyHealthyCatalogoApp:lojas', JSON.stringify(atualizadas));
         },
       },
     ]);
   };
 
-  const editarLoja = (loja: Loja) => {
+  const editarLoja = (restaurant: Restaurant) => {
     console.log("teste");
-    navigation.navigate('StoreRegister', { loja });
+    navigation.navigate('StoreRegister', { restaurant });
   };
 
-  const renderItem = ({ item }: { item: Loja }) => (
-    <View style={styles.card}>
-      <View style={styles.details}>
-        <Text style={styles.nome}>{item.nome}</Text>
-        <Text style={styles.endereco}>{item.endereco}</Text>
-        <Text style={styles.cnpj}>CNPJ: {item.cnpj}</Text>
-        <Text style={styles.coord}>Lat: {item.latitude} | Lon: {item.longitude}</Text>
-        <View style={styles.actions}>
-          <TouchableOpacity onPress={() => editarLoja(item)} style={styles.buttonEdit}>
-            <Text style={styles.buttonText}>Editar</Text>
+  const renderItem = ({ item }: { item: Restaurant }) => (
+    <View style={storeList_styles.card}>
+      <View style={storeList_styles.details}>
+        <Text style={storeList_styles.nome}>{item.nome}</Text>
+        <Text style={storeList_styles.endereco}>{item.rua}</Text>
+        <Text style={storeList_styles.cnpj}>CNPJ: {item.cnpj}</Text>
+        <Text style={storeList_styles.coord}>Lat: {item.latitude} | Lon: {item.longitude}</Text>
+        <View style={storeList_styles.actions}>
+          <TouchableOpacity onPress={() => editarLoja(item)} style={storeList_styles.buttonEdit}>
+            <Text style={storeList_styles.buttonText}>Editar</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => excluirLoja(item.id)} style={styles.buttonDelete}>
-            <Text style={styles.buttonText}>Excluir</Text>
+          <TouchableOpacity onPress={() => excluirLoja(item.id)} style={storeList_styles.buttonDelete}>
+            <Text style={storeList_styles.buttonText}>Excluir</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -77,80 +70,13 @@ export const StoreListScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={storeList_styles.container}>
       <FlatList
-        data={lojas}
+        data={restaurants}
         keyExtractor={(item) => item.id}
         renderItem={renderItem}
-        ListEmptyComponent={<Text style={styles.empty}>Nenhuma loja cadastrada.</Text>}
+        ListEmptyComponent={<Text style={storeList_styles.empty}>Nenhuma loja cadastrada.</Text>}
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    padding: 16,
-  },
-  card: {
-    marginBottom: 16,
-    padding: 12,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    backgroundColor: '#f9fafb',
-  },
-  details: {
-    flex: 1,
-  },
-  nome: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 4,
-  },
-  endereco: {
-    fontSize: 14,
-    color: '#444',
-    marginBottom: 2,
-  },
-  cnpj: {
-    fontSize: 14,
-    color: '#555',
-    marginBottom: 2,
-  },
-  coord: {
-    fontSize: 13,
-    color: '#666',
-    marginBottom: 6,
-  },
-  actions: {
-    flexDirection: 'row',
-    gap: 12,
-    marginTop: 4,
-  },
-  buttonEdit: {
-    backgroundColor: '#3B82F6',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  buttonDelete: {
-    backgroundColor: '#EF4444',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 6,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '600',
-  },
-  empty: {
-    textAlign: 'center',
-    marginTop: 32,
-    fontSize: 16,
-    color: '#888',
-  },
-});
- 

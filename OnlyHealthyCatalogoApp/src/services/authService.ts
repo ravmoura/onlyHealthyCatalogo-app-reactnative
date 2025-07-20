@@ -33,3 +33,9 @@ export async function excluirUsuarioPorEmail(email: string): Promise<void> {
   const atualizados = usuarios.filter(p => p.email !== email);
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(atualizados));
 }
+
+export async function buscarUsuario(email: string, senha: string): Promise<User> {
+  const usuarios = await listarUsuarios();
+  const buscausuario = usuarios.filter(p => p.email !== email, (k: { senha: string; }) => k.senha !== senha);
+  return buscausuario[0];
+}

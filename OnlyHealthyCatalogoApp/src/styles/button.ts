@@ -9,7 +9,7 @@ export const button_styles = StyleSheet.create({
     alignContent: "flex-start"
   },  
   gradientBackground: {
-      width: 220,
+      width: 230,
       height: 55,      
       borderRadius: 30,    
       paddingVertical: 2,    

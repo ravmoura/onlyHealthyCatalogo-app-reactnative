@@ -1,6 +1,6 @@
 // LoginScreen.tsx - criado automaticamente
 import React, { useState } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
 import { useAuth } from '../context/AuthContext';
@@ -8,10 +8,15 @@ import { LinkMenu } from '../components/LinkMenu';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../types/navigation';
 import { global_styles } from '../styles/global';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { AppStackParamList } from '../types/navigation';
+
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
 export const LoginScreen = ({ navigation }: Props) => {
+  const navigationApp = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -33,25 +38,36 @@ export const LoginScreen = ({ navigation }: Props) => {
       } else if (!senha.trim()) {
           setSenhaerro('Senha deve ser informada!');
           return;
-      } else if (!validarEmail){
-          setEmailerro('E-mail inválido!'); 
-          return;
+      } else if (!validarEmail(email)) {
+        setEmailerro('E-mail inválido!');
+        return;
       } 
       setErro('');
-      setLoading(true);
+      setLoading(true);      
 
-      const sucesso = await login(email, senha);
-      setLoading(false);
+      try {
+        const tipoUser = await login(email, senha);
+        setLoading(false);
 
-      if (!sucesso) {
-        setErro('Usuário ou senha inválidos');
-      }
+        if (!tipoUser.trim()){
+            setErro('E-mail e/ou senha inválidos!');
+        } else {
+          //limparCampos();  
+          Alert.alert('Sucesso', 'Login '+ tipoUser + ' realizado com sucesso!', [
+            { text: 'OK',             
+              onPress: () => { tipoUser === 'admin' ? navigationApp.navigate('StoreRegister', { }): navigationApp.navigate('ProductList');  } 
+            },
+          ]);
+        }
+      } catch (error) {
+        Alert.alert('Erro', 'Erro ao salvar o produto.');
+        console.error(error);
+      }      
   };
 
    
   return (
     <View style={global_styles.container}>
-      {/*<Image source={require('../assets/logoonlyhealthycinza.png')} style={global_styles.logo} />*/}
       <LinkMenu mainTitle="Login" secondaryTitle="Cadastrar Usuário" onMainPress='Login' onSecondaryPress='Register'/>
       
       <Text style={global_styles.infoText}>Informe e-mail e senha para entrar:</Text>

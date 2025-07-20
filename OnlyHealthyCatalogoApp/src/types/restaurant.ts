@@ -1,5 +1,5 @@
 // loja.ts - criado automaticamente
-export interface Loja {
+export interface Restaurant {
     id: string;
     nome: string;
     cnpj: string;

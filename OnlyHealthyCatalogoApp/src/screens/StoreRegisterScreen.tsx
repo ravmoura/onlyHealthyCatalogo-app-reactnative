@@ -1,6 +1,6 @@
 // StoreRegisterScreen.tsx - criado automaticamente
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert, Text, TouchableWithoutFeedback, Keyboard, ActivityIndicator, TouchableOpacity} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Input } from '../components/Input';
 import { Button } from '../components/Button';
@@ -8,18 +8,19 @@ import { validarCNPJ } from '../utils/validators';
 import { formatarCNPJ } from '../utils/masks';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../types/navigation';
-import { Loja } from '../types/loja';
+import { Restaurant } from '../types/restaurant';
 import MapView, { Marker } from 'react-native-maps';
 import { LinkMenu } from '../components/LinkMenu';
 import { storeRegister_styles } from '../styles/storeRegister_styles';
 import { global_styles } from '../styles/global';
 import { InputMenor } from '../components/InputMenor';
+import { MenuButton } from '../components/MenuButton';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'StoreRegister'>;
 
 export const StoreRegisterScreen = ({ route, navigation }: Props) => {
-  const lojaEdit = route.params?.loja;
-
+  const lojaEdit = route.params?.restaurant;
+  const [loading, setLoading] = useState(false);
   const [nome, setNome] = useState('');
   const [rua, setRua] = useState('');
   const [cep, setCep] = useState('');
@@ -82,6 +83,10 @@ export const StoreRegisterScreen = ({ route, navigation }: Props) => {
       setLongitudeErro('');
   };
 
+  const handleBuscarCep = async() => {
+
+  }
+
   const handleSubmit = async () => {
       limparTextosErro;
 
@@ -127,7 +132,7 @@ export const StoreRegisterScreen = ({ route, navigation }: Props) => {
       const lojas = dadosExistentes ? JSON.parse(dadosExistentes) : [];
 
       if (lojaEdit) {
-        const lojasAtualizadas = lojas.map((l: Loja) =>
+        const lojasAtualizadas = lojas.map((l: Restaurant) =>
           l.id === lojaEdit.id
             ? { ...l, nome, rua, cep, numero, bairro, cidade, uf, cnpj, latitude, longitude }
             : l
@@ -135,7 +140,7 @@ export const StoreRegisterScreen = ({ route, navigation }: Props) => {
         await AsyncStorage.setItem('@OnlyHealthyCatalogoApp:lojas', JSON.stringify(lojasAtualizadas));
         Alert.alert('Sucesso', 'Loja atualizada com sucesso!');
       } else {
-        const novaLoja: Loja = {
+        const novaLoja: Restaurant = {
           id: Date.now().toString(),
           nome,
           rua,
@@ -165,33 +170,39 @@ export const StoreRegisterScreen = ({ route, navigation }: Props) => {
   return (
   <KeyboardAvoidingView
     style={{ flex: 1 }}
-    behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-  >
-    {/*<TouchableWithoutFeedback onPress={Keyboard.dismiss}>       */}
-      {/*<View style={global_styles.container}>*/}        
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={global_styles.container}>          
-          <LinkMenu mainTitle={mainTitleText} secondaryTitle="Pratos" onMainPress='StoreRegister' onSecondaryPress='ProductRegister' />
-          <Input label="Nome do Restaurante" value={nome} onChangeText={setNome} error={nomeErro}/>
-          <Input label="CNPJ" value={cnpj} onChangeText={(text) => setCnpj(formatarCNPJ(text))} keyboardType="numeric" error={cnpjErro} />
-          <Input label="Rua" value={rua} onChangeText={setRua} error={ruaErro}/>
-          <View style={storeRegister_styles.row}>
-            <InputMenor label="CEP" value={cep} onChangeText={setCep} error={cepErro} />
-            <InputMenor label="Número" value={numero} onChangeText={setNumero} error={numeroErro} />
-          </View>
-          <View style={storeRegister_styles.row}>
-            <InputMenor label="Cidade" value={cidade} onChangeText={setCidade} error={cidadeErro} />
-            <InputMenor label="UF" value={uf} onChangeText={setUf} error={ufErro} />
-          </View>
-          <View style={storeRegister_styles.row}>
-            <InputMenor label="Latitude" value={latitude} onChangeText={setLatitude} keyboardType="numeric" error={latitudeErro} />
-            <InputMenor label="Longitude" value={longitude} onChangeText={setLongitude} keyboardType="numeric" error={longitudeErro} />
-          </View>
-          <View style={ storeRegister_styles.viewBotao}>
-            <Button title={lojaEdit ? 'Salvar Alterações' : 'Cadastrar Loja'} onPress={handleSubmit} />
-          </View>
-        </ScrollView>
-  {/*    </View>     */}
-  {/*  </TouchableWithoutFeedback> */}
+    behavior={Platform.OS === 'ios' ? 'padding' : undefined} >    
+      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={global_styles.container}>          
+        <LinkMenu mainTitle={mainTitleText} secondaryTitle="Pratos" onMainPress='StoreRegister' onSecondaryPress='ProductRegister' />
+        
+        <Text style={global_styles.infoText}>Informe os dados abaixo para cadastro:</Text>
+
+        <Input label="Nome do Restaurante" value={nome} onChangeText={setNome} error={nomeErro}/>
+        <Input label="CNPJ" value={cnpj} onChangeText={(text) => setCnpj(formatarCNPJ(text))} keyboardType="numeric" error={cnpjErro} />
+        <Input label="Rua" value={rua} onChangeText={setRua} error={ruaErro}/>
+        <View style={storeRegister_styles.row}>
+          <InputMenor label="CEP" value={cep} onChangeText={setCep} error={cepErro} />
+          <InputMenor label="Número" value={numero} onChangeText={setNumero} error={numeroErro} />
+        </View>
+        <View style={storeRegister_styles.row}>
+          <InputMenor label="Cidade" value={cidade} onChangeText={setCidade} error={cidadeErro} />
+          <InputMenor label="UF" value={uf} onChangeText={setUf} error={ufErro} />
+        </View>
+        <View style={storeRegister_styles.row}>
+          <InputMenor label="Latitude" value={latitude} onChangeText={setLatitude} keyboardType="numeric" error={latitudeErro} />
+          <InputMenor label="Longitude" value={longitude} onChangeText={setLongitude} keyboardType="numeric" error={longitudeErro} />
+        </View>
+        <View style={ storeRegister_styles.viewBotao}>          
+          <Button title="Buscar CEP" onPress={() => navigation.navigate('SearchCep')} />                                                    
+          {loading ? (
+            <ActivityIndicator size="large" color="#2563EB" style={{ marginTop: 16 }} />
+          ) : (
+            <Button title={mainTitleText} onPress={handleSubmit} />
+          )}   
+          <TouchableOpacity onPress={() => navigation.navigate('StoreList')}>
+                          <Text style={global_styles.link}>Visualize Restaurantes</Text>
+          </TouchableOpacity>               
+        </View>
+      </ScrollView>  
    </KeyboardAvoidingView>
 );
 };
