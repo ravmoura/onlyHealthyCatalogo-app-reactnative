@@ -20,12 +20,14 @@ import { Button } from '../components/Button';
 import { EditButton } from '../components/EditButton';
 import { input_styles } from '../styles/input';
 import { global_styles } from '../styles/global';
+import { useAuth } from '../context/AuthContext';
 
 export const ProductListScreen = () => {
   const [produtos, setProdutos] = useState<Produto[]>([]);
   const [filtro, setFiltro] = useState('');
   const navigation = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
   const isFocused = useIsFocused();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (isFocused) {
@@ -72,8 +74,12 @@ export const ProductListScreen = () => {
         <Text style={product_styles.preco}>R$ {item.preco}</Text>
         
         <View style={product_styles.actions}>          
-            <EditButton title='Editar' onPress={() => editarProduto(item)} variant='primary'/>
-            <EditButton title='Excluir' onPress={() => excluirProduto(item.id)} variant='secondary'/>            
+             {user?.tipo === 'admin' && ( 
+              <>
+                <EditButton title='Editar' onPress={() => editarProduto(item)} variant='primary'/>
+                <EditButton title='Excluir' onPress={() => excluirProduto(item.id)} variant='secondary'/>
+              </>
+            )}
         </View>
       </View>
     </View>

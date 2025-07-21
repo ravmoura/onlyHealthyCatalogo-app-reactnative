@@ -2,15 +2,14 @@
 import { StyleSheet } from "react-native";
 
 export const global_styles = StyleSheet.create({
-  container: {
-    //flex: 1,
+  container: {  
     //justifyContent: 'center',
     alignItems: 'center',
     //backgroundColor: '#2563EB',
     backgroundColor: '#e5e7eb',
     paddingHorizontal: 30,    
     marginTop: 0,
-    height: '100%',
+    //height: '100%',
   },
   logo: {
     width: 300,

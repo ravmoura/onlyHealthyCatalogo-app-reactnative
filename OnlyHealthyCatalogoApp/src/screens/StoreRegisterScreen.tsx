@@ -163,7 +163,9 @@ export const StoreRegisterScreen = ({ route, navigation }: Props) => {
   return (
     <KeyboardAvoidingView
       style={{ flex: 1 }}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined} >    
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined} 
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 64 : 0}
+    >    
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={global_styles.container}>          
           <LinkMenu mainTitle={mainTitleText} secondaryTitle="Pratos" onMainPress='StoreRegister' onSecondaryPress='ProductRegister' />
           

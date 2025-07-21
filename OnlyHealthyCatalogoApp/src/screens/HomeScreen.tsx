@@ -50,7 +50,7 @@ export const HomeScreen = () => {
             <Image style={home_styles.advantagesIMG} source={require('../assets/advantages.png')} />        
             <MenuButton title="Login" screen="Login" />
             <MenuButton title="Cadastrar" screen="Register" />
-            <Button title="Limpar dados" onPress={clearAllData} />
+            {/* <Button title="Limpar dados" onPress={clearAllData} /> */}
         </View>
     </View>    
   );
