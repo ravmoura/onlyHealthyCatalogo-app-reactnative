@@ -91,7 +91,7 @@ export const ProductListScreen = () => {
         onChangeText={setFiltro}
         style={input_styles.input}
       />
-      <View style={global_styles.espacamento} />
+        <View style={global_styles.espacamento} />
       <FlatList
         data={produtosFiltrados}
         keyExtractor={(item) => item.id}
