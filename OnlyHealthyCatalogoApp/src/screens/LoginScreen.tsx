@@ -11,7 +11,7 @@ import { global_styles } from '../styles/global';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AppStackParamList } from '../types/navigation';
-
+import { validarEmail } from '../utils/validators';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
@@ -23,10 +23,12 @@ export const LoginScreen = ({ navigation }: Props) => {
   const [erro, setErro] = useState('');
   const [loading, setLoading] = useState(false);
   const [emailerro, setEmailerro] = useState('');
-  const [senhaerro, setSenhaerro] = useState('');
-  
-  const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
-  const validarEmail = (email: string) => emailRegex.test(email);
+  const [senhaerro, setSenhaerro] = useState('');  
+
+  const limparCampos = () => {
+      setEmail('');
+      setSenha('');      
+  };
   
   const handleLogin = async () => {
       setEmailerro('');
@@ -39,20 +41,20 @@ export const LoginScreen = ({ navigation }: Props) => {
           setSenhaerro('Senha deve ser informada!');
           return;
       } else if (!validarEmail(email)) {
-        setEmailerro('E-mail inválido!');
-        return;
+          setEmailerro('E-mail inválido!');
+          return;
       } 
-      setErro('');
-      setLoading(true);      
+      setErro('');      
 
       try {
+        setLoading(true);      
         const tipoUser = await login(email, senha);
         setLoading(false);
 
         if (!tipoUser.trim()){
             setErro('E-mail e/ou senha inválidos!');
         } else {
-          //limparCampos();  
+          limparCampos();  
           Alert.alert('Sucesso', 'Login '+ tipoUser + ' realizado com sucesso!', [
             { text: 'OK',             
               onPress: () => { tipoUser === 'admin' ? navigationApp.navigate('StoreRegister', { }): navigationApp.navigate('ProductList');  } 
@@ -64,7 +66,6 @@ export const LoginScreen = ({ navigation }: Props) => {
         console.error(error);
       }      
   };
-
    
   return (
     <View style={global_styles.container}>
@@ -76,15 +77,14 @@ export const LoginScreen = ({ navigation }: Props) => {
       <Input label="Senha" value={senha} onChangeText={setSenha} secureTextEntry error={senhaerro}/>
 
       {erro !== '' && <Text style={global_styles.error}>{erro}</Text>}
-      <View style={{ height: '3%', backgroundColor: 'transparent' }} />
+      <View style={global_styles.espacamento} />
       {loading ? (
-        <ActivityIndicator size="large" color="#2563EB" style={{ marginTop: 16 }} />
+        <ActivityIndicator size="large" color="#2563EB" style={global_styles.margemActivityIndicator} />
       ) : (
         <Button title="Entrar" onPress={handleLogin} />
       )}
-
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={global_styles.link}>Não possui conta? Cadastre-se</Text>
+          <Text style={global_styles.link}>Não possui conta? Cadastre-se</Text>
       </TouchableOpacity>
     </View>
   );

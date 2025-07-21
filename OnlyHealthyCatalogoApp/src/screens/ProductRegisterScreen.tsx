@@ -12,6 +12,9 @@ import { product_styles } from '../styles/product_styles';
 import { global_styles } from '../styles/global';
 import { LinkMenu } from '../components/LinkMenu'; // Certifique-se de que a tipagem deste componente está correta
 import { Linking } from 'react-native';
+import { InputMenor } from '../components/InputMenor';
+import { BuscaCepButton } from '../components/buscaCepButton';
+import { storeRegister_styles } from '../styles/storeRegister_styles';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'ProductRegister'>;
 
@@ -31,7 +34,7 @@ export const ProductRegisterScreen = ({ route, navigation }: Props) => {
     
   useEffect(() => {
       if (produtoEdicao) {
-        navigation.setOptions({ title: 'Editar Produto' });
+        navigation.setOptions({ title: 'Editar Prato' });
       }
   }, []);
 
@@ -178,7 +181,9 @@ export const ProductRegisterScreen = ({ route, navigation }: Props) => {
       };
 
       try {
+        setLoading(true);
         await salvarProduto(novoProduto);
+        setLoading(false);
 
         Alert.alert(
           'Sucesso',
@@ -206,27 +211,30 @@ export const ProductRegisterScreen = ({ route, navigation }: Props) => {
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
         <ScrollView contentContainerStyle={global_styles.container}>          
-            <LinkMenu mainTitle={mainTitleText} secondaryTitle="Restaurante" onMainPress='ProductRegister' onSecondaryPress='ProductList' />        
+            <LinkMenu mainTitle={mainTitleText} secondaryTitle="Restaurante" onMainPress='ProductRegister' onSecondaryPress='StoreRegister' />        
+            <Text style={global_styles.infoText}>Informe os dados abaixo para cadastro:</Text>
+
             <Input label="Nome do Prato" value={nome} onChangeText={setNome} error={nomeerro} />
             <Input label="Descrição" value={descricao} onChangeText={setDescricao} error={descricaoerro}/>
             <Input label="Preço" value={preco} onChangeText={setPreco} keyboardType="numeric" error={precoerro}/>
-            <Input label="Imagem" value={imagem} onChangeText={setImagem} error={imagemerro}/>
-            {erro !== '' && <Text style={global_styles.error}>{erro}</Text>}
-            <View style={{ height: 320, backgroundColor: 'transparent' }} >          
-                {imagem !== '' &&  <Image source={{ uri: imagem }} style={global_styles.logo} />}                                  
+            
+            <View style={storeRegister_styles.row}>
+              <InputMenor label="Imagem" value={imagem} onChangeText={setImagem} error={imagemerro} />
+              <BuscaCepButton title="Selecionar IMG" onPress={selecionarImagemGaleria}  />
+            </View>                        
+            {erro !== '' && <Text style={global_styles.error}>{erro}</Text>}                                            
+            <View style={ storeRegister_styles.viewBotao}>                    
+                {loading ? (
+                  <ActivityIndicator size="large" color="#2563EB" style={global_styles.margemActivityIndicator} />
+                ) : (
+                  <Button title={produtoEdicao ? 'Salvar Alterações' : 'Cadastrar Prato'} onPress={handleSubmit} />
+                )}   
+                <TouchableOpacity onPress={() => navigation.navigate('ProductList')} >
+                    <Text style={global_styles.link}>Visualize Cardápio</Text>
+                </TouchableOpacity>     
             </View>            
+            {imagem !== '' &&  <Image source={{ uri: imagem }} style={product_styles.imgPrato} />}                                              
         </ScrollView>
-        <View style={{justifyContent: 'flex-start', alignItems: 'center'}}>                                    
-            <Button title="Selecionar Imagem" onPress={selecionarImagemGaleria} />                                                    
-            {loading ? (
-              <ActivityIndicator size="large" color="#2563EB" style={{ marginTop: 16 }} />
-            ) : (
-              <Button title={produtoEdicao ? 'Salvar Alterações' : 'Cadastrar Prato'} onPress={handleSubmit} />
-            )}   
-            <TouchableOpacity onPress={() => navigation.navigate('ProductList')}>
-                <Text style={global_styles.link}>Visualize Cardápio</Text>
-            </TouchableOpacity>     
-        </View>
       </KeyboardAvoidingView>
     );
 };

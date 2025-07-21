@@ -15,6 +15,9 @@ import { storeRegister_styles } from '../styles/storeRegister_styles';
 import { global_styles } from '../styles/global';
 import { InputMenor } from '../components/InputMenor';
 import { MenuButton } from '../components/MenuButton';
+import { EditButton } from '../components/EditButton';
+import { BuscaCepButton } from '../components/buscaCepButton';
+import { salvarRestaurant } from '../services/restaurantService';
 
 type Props = NativeStackScreenProps<AppStackParamList, 'StoreRegister'>;
 
@@ -31,6 +34,7 @@ export const StoreRegisterScreen = ({ route, navigation }: Props) => {
   const [cnpj, setCnpj] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
+  const [erro, setErro] = useState('');
   const [nomeErro, setNomeErro] = useState('');
   const [ruaErro, setRuaErro] = useState('');
   const [cepErro, setCepErro] = useState('');
@@ -41,6 +45,8 @@ export const StoreRegisterScreen = ({ route, navigation }: Props) => {
   const [cnpjErro, setCnpjErro] = useState('');
   const [latitudeErro, setLatitudeErro] = useState('');
   const [longitudeErro, setLongitudeErro] = useState('');
+  const lat = parseFloat(latitude);
+  const long = parseFloat(longitude);
 
   useEffect(() => {
     if (lojaEdit) {
@@ -83,13 +89,8 @@ export const StoreRegisterScreen = ({ route, navigation }: Props) => {
       setLongitudeErro('');
   };
 
-  const handleBuscarCep = async() => {
-
-  }
-
   const handleSubmit = async () => {
       limparTextosErro;
-
       if (!nome.trim()) {
           setNomeErro('Nome do Restaurante deve ser informado!'); 
           return;
@@ -117,31 +118,16 @@ export const StoreRegisterScreen = ({ route, navigation }: Props) => {
       } else if (!validarCNPJ(cnpj)) {
           setCnpjErro('CNPJ inválido!');
           return;
+      } else if (isNaN(lat) || isNaN(long)) {
+          Alert.alert('Erro', 'Latitude e Longitude devem ser números válidos!');
+          return;
       } 
-      //setErro('');            
+      setErro('');                              
 
-      const lat = parseFloat(latitude);
-      const long = parseFloat(longitude);
-      if (isNaN(lat) || isNaN(long)) {
-        Alert.alert('Erro', 'Latitude e Longitude devem ser números válidos!');
-        return;
-      }
+      const id = lojaEdit?.id ?? Date.now().toString();
 
-    try {
-      const dadosExistentes = await AsyncStorage.getItem('@OnlyHealthyCatalogoApp:lojas');
-      const lojas = dadosExistentes ? JSON.parse(dadosExistentes) : [];
-
-      if (lojaEdit) {
-        const lojasAtualizadas = lojas.map((l: Restaurant) =>
-          l.id === lojaEdit.id
-            ? { ...l, nome, rua, cep, numero, bairro, cidade, uf, cnpj, latitude, longitude }
-            : l
-        );
-        await AsyncStorage.setItem('@OnlyHealthyCatalogoApp:lojas', JSON.stringify(lojasAtualizadas));
-        Alert.alert('Sucesso', 'Loja atualizada com sucesso!');
-      } else {
-        const novaLoja: Restaurant = {
-          id: Date.now().toString(),
+      const novoRestaurante: Restaurant = {
+          id,
           nome,
           rua,
           cep, 
@@ -152,57 +138,69 @@ export const StoreRegisterScreen = ({ route, navigation }: Props) => {
           cnpj,
           latitude,
           longitude
-        };
-        lojas.push(novaLoja);
-        await AsyncStorage.setItem('@OnlyHealthyCatalogoApp:lojas', JSON.stringify(lojas));
-        Alert.alert('Sucesso', 'Loja cadastrada com sucesso!');
+      };
+
+    try {
+        setLoading(true);
+        await salvarRestaurant(novoRestaurante);
+        setLoading(false);
+
         limparCampos();
-      }
-      navigation.goBack();
+        Alert.alert('Sucesso', lojaEdit?.id ? 'Restaurante atualizado com sucesso!' : 'Restaurante cadastrado com sucesso!', [
+          { text: 'OK',             
+            onPress: () => { navigation.navigate('ProductRegister', { });  } 
+          },
+        ]);                        
     } catch (error) {
-      Alert.alert('Erro', 'Falha ao salvar a loja.');
-      console.error(error);
-    }
+        Alert.alert('Erro', 'Erro ao salvar o restaurante.');
+        console.error(error);
+     }
   };
+
   // Determina o título principal
-  const mainTitleText = lojaEdit ? 'Editar Restaurante' : 'Cadastrar Restaurante';
+  const mainTitleText = lojaEdit?.id ? 'Editar Restaurante' : 'Cadastrar Restaurante';
 
   return (
-  <KeyboardAvoidingView
-    style={{ flex: 1 }}
-    behavior={Platform.OS === 'ios' ? 'padding' : undefined} >    
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={global_styles.container}>          
-        <LinkMenu mainTitle={mainTitleText} secondaryTitle="Pratos" onMainPress='StoreRegister' onSecondaryPress='ProductRegister' />
-        
-        <Text style={global_styles.infoText}>Informe os dados abaixo para cadastro:</Text>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined} >    
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={global_styles.container}>          
+          <LinkMenu mainTitle={mainTitleText} secondaryTitle="Pratos" onMainPress='StoreRegister' onSecondaryPress='ProductRegister' />
+          
+          <Text style={global_styles.infoText}>Informe os dados abaixo para cadastro:</Text>
+          
+          <View style={storeRegister_styles.row}>
+            <InputMenor label="CEP" value={cep} onChangeText={setCep} error={cepErro} />
+            <BuscaCepButton title="Buscar CEP" onPress={() => navigation.navigate('SearchCep')}  />
+          </View>
+          <Input label="Nome do Restaurante" value={nome} onChangeText={setNome} error={nomeErro}/>
+          <Input label="CNPJ" value={cnpj} onChangeText={(text) => setCnpj(formatarCNPJ(text))} keyboardType="numeric" error={cnpjErro} />
+          <Input label="Logradouro" value={rua} onChangeText={setRua} error={ruaErro}/>          
 
-        <Input label="Nome do Restaurante" value={nome} onChangeText={setNome} error={nomeErro}/>
-        <Input label="CNPJ" value={cnpj} onChangeText={(text) => setCnpj(formatarCNPJ(text))} keyboardType="numeric" error={cnpjErro} />
-        <Input label="Rua" value={rua} onChangeText={setRua} error={ruaErro}/>
-        <View style={storeRegister_styles.row}>
-          <InputMenor label="CEP" value={cep} onChangeText={setCep} error={cepErro} />
-          <InputMenor label="Número" value={numero} onChangeText={setNumero} error={numeroErro} />
-        </View>
-        <View style={storeRegister_styles.row}>
-          <InputMenor label="Cidade" value={cidade} onChangeText={setCidade} error={cidadeErro} />
-          <InputMenor label="UF" value={uf} onChangeText={setUf} error={ufErro} />
-        </View>
-        <View style={storeRegister_styles.row}>
-          <InputMenor label="Latitude" value={latitude} onChangeText={setLatitude} keyboardType="numeric" error={latitudeErro} />
-          <InputMenor label="Longitude" value={longitude} onChangeText={setLongitude} keyboardType="numeric" error={longitudeErro} />
-        </View>
-        <View style={ storeRegister_styles.viewBotao}>          
-          <Button title="Buscar CEP" onPress={() => navigation.navigate('SearchCep')} />                                                    
-          {loading ? (
-            <ActivityIndicator size="large" color="#2563EB" style={{ marginTop: 16 }} />
-          ) : (
-            <Button title={mainTitleText} onPress={handleSubmit} />
-          )}   
-          <TouchableOpacity onPress={() => navigation.navigate('StoreList')}>
-                          <Text style={global_styles.link}>Visualize Restaurantes</Text>
-          </TouchableOpacity>               
-        </View>
-      </ScrollView>  
-   </KeyboardAvoidingView>
-);
+          <View style={storeRegister_styles.row}>
+            <InputMenor label="Bairro" value={bairro} onChangeText={setBairro} error={bairroErro} />
+            <InputMenor label="Número" value={numero} onChangeText={setNumero} error={numeroErro} />
+          </View>
+          <View style={storeRegister_styles.row}>
+            <InputMenor label="Cidade" value={cidade} onChangeText={setCidade} error={cidadeErro} />
+            <InputMenor label="UF" value={uf} onChangeText={setUf} error={ufErro} />
+          </View>
+          <View style={storeRegister_styles.row}>
+            <InputMenor label="Latitude" value={latitude} onChangeText={setLatitude} keyboardType="numeric" error={latitudeErro} />
+            <InputMenor label="Longitude" value={longitude} onChangeText={setLongitude} keyboardType="numeric" error={longitudeErro} />
+          </View>
+          {erro !== '' && <Text style={global_styles.error}>{erro}</Text>}
+          <View style={ storeRegister_styles.viewBotao}>                    
+            {loading ? (
+              <ActivityIndicator size="large" color="#2563EB" style={global_styles.margemActivityIndicator} />
+            ) : (
+              <Button title={mainTitleText} onPress={handleSubmit} />
+            )}   
+            <TouchableOpacity onPress={() => navigation.navigate('StoreList')}>
+                  <Text style={global_styles.link}>Visualizar Restaurantes</Text>
+            </TouchableOpacity>               
+          </View>
+        </ScrollView>  
+    </KeyboardAvoidingView>
+  );
 };

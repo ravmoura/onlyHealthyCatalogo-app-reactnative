@@ -7,11 +7,11 @@ export const searchCep_styles = StyleSheet.create({
         borderRadius: 8,
     },
     addressContainer: {
-        padding: 20,
+        padding: 28,
         backgroundColor: '#fff',
         borderRadius: 8,
-        //marginTop: 5,
-        //elevation: 2,
+        marginTop: 5,
+        elevation: 2,
     },
     addressText: {
         fontSize: 14,

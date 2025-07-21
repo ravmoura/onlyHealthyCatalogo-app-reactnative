@@ -33,4 +33,7 @@ export const validarCNPJ = (cnpj: string): boolean => {
   resultado = soma % 11 < 2 ? 0 : 11 - (soma % 11);
   return resultado === parseInt(digitos.charAt(1));
 };
+
+export const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+export const validarEmail = (email: string) => emailRegex.test(email);
  

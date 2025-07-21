@@ -9,6 +9,7 @@ import {
     ScrollView,
     RefreshControl,
     StyleSheet,
+    Alert,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { useNavigation } from '@react-navigation/native';
@@ -27,28 +28,19 @@ export const HomeScreen = () => {
   const navigation = useNavigation();
   const [dica, setDica] = useState('');
   const [carregando, setCarregando] = useState(false);
-  const [loading, setLoading] = useState(false);
-  
-  const buscarProdutos = async (): Promise<Produto[]> => {
-    const data = await AsyncStorage.getItem('@OnlyHealthyCatalogoApp:produtos');
-    return data ? JSON.parse(data) : [];
-  };
-
-  const gerarDica = async () => {
-    setCarregando(true);
-    const produtos = await buscarProdutos();
-    const texto = await gerarDicaIA(produtos, user?.nome || 'usuário');
-    setDica(texto);
-    setCarregando(false);
-  };
-
-  const limparDica = () => setDica('');
-
-  useEffect(() => {
-    gerarDica();
-  }, []);  
-
+  const [loading, setLoading] = useState(false);        
   type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
+
+  const clearAllData = async () => {
+  try {
+    await AsyncStorage.clear();
+    console.log('AsyncStorage limpo com sucesso!');
+    Alert.alert('Sucesso', 'Todos os dados foram removidos do aplicativo.');
+  } catch (error) {
+    console.error('Erro ao limpar o AsyncStorage:', error);
+    Alert.alert('Erro', 'Não foi possível limpar os dados do aplicativo.');
+  }
+};
   
   return (
     <View style={home_styles.container}>
@@ -58,29 +50,8 @@ export const HomeScreen = () => {
             <Image style={home_styles.advantagesIMG} source={require('../assets/advantages.png')} />        
             <MenuButton title="Login" screen="Login" />
             <MenuButton title="Cadastrar" screen="Register" />
+            <Button title="Limpar dados" onPress={clearAllData} />
         </View>
-        {/*<View style={global_styles.footer}>
-            <Text style={global_styles.footerTitle}>🎯 Dicas personalizadas para você</Text>
-
-            <ScrollView style={global_styles.dicaContainer}>
-                {carregando ? (
-                <ActivityIndicator size="small" style={{ marginVertical: 8 }} />
-                ) : dica ? (
-                <Text style={global_styles.dica}>{dica}</Text>
-                ) : (
-                <Text style={global_styles.dicaVazia}>Nenhuma dica no momento.</Text>
-                )}
-            </ScrollView>
-            <View style={global_styles.footerButtons}>
-                <TouchableOpacity onPress={gerarDica}>
-                <Text style={global_styles.footerLink}>🔄 Nova dica</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={limparDica}>
-                <Text style={[global_styles.footerLink]}>🧹 Limpar dica</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
-        */}
     </View>    
   );
 };

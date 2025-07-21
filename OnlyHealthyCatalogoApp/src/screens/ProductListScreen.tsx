@@ -18,6 +18,8 @@ import { listarProdutos, excluirProdutoPorId } from '../services/productService'
 import { product_styles } from '../styles/product_styles';
 import { Button } from '../components/Button';
 import { EditButton } from '../components/EditButton';
+import { input_styles } from '../styles/input';
+import { global_styles } from '../styles/global';
 
 export const ProductListScreen = () => {
   const [produtos, setProdutos] = useState<Produto[]>([]);
@@ -87,9 +89,9 @@ export const ProductListScreen = () => {
         placeholder="Buscar produto..."
         value={filtro}
         onChangeText={setFiltro}
-        style={product_styles.input}
+        style={input_styles.input}
       />
-
+      <View style={global_styles.espacamento} />
       <FlatList
         data={produtosFiltrados}
         keyExtractor={(item) => item.id}

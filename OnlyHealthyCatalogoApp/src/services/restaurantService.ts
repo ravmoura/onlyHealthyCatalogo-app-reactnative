@@ -1,20 +1,18 @@
-
-// productService.ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Produto } from '../types/produto';
+import { Restaurant } from '../types/restaurant';
 
-const STORAGE_KEY = '@OnlyHealthyCatalogoApp:produtos';
+const STORAGE_KEY = '@OnlyHealthyCatalogoApp:restaurants';
 
-export async function salvarProduto(produto: Produto): Promise<void> {
+export async function salvarRestaurant(restaurant: Restaurant): Promise<void> {
   const data = await AsyncStorage.getItem(STORAGE_KEY);
-  let produtos: Produto[] = []; // Inicializa como array vazio
+  let restaurants: Restaurant[] = []; // Inicializa como array vazio
 
   if (data) {
     try {
       const parsedData = JSON.parse(data);
       
       if (Array.isArray(parsedData)) {
-        produtos = parsedData;
+        restaurants = parsedData;
       } else {
         console.warn(`Dados em '${STORAGE_KEY}' não são um array válido. Re-inicializando.`);        
       }
@@ -23,26 +21,26 @@ export async function salvarProduto(produto: Produto): Promise<void> {
     }
   }
 
-  const index = produtos.findIndex(p => p.id === produto.id);
+  const index = restaurants.findIndex(p => p.id === restaurant.id);
 
   if (index !== -1) {
-    produtos[index] = produto; // Atualiza
+    restaurants[index] = restaurant; // Atualiza
   } else {
-    produtos.push(produto); // Novo
+    restaurants.push(restaurant); // Novo
   }
 
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(produtos));
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(restaurants));
 }
 
-export async function listarProdutos(): Promise<Produto[]> {
+export async function listarRestaurants(): Promise<Restaurant[]> {
   const data = await AsyncStorage.getItem(STORAGE_KEY);
-  let produtos: Produto[] = []; // Inicializa como array vazio
+  let restaurants: Restaurant[] = []; // Inicializa como array vazio
 
   if (data) {
     try {
       const parsedData = JSON.parse(data);
       if (Array.isArray(parsedData)) {
-        produtos = parsedData;
+        restaurants = parsedData;
       } else {
         console.warn(`Dados em '${STORAGE_KEY}' para listagem não são um array válido. Retornando array vazio.`);
       }
@@ -50,15 +48,15 @@ export async function listarProdutos(): Promise<Produto[]> {
       console.error(`Erro ao parsear dados de '${STORAGE_KEY}' para listagem:`, parseError);
     }
   }
-  return produtos;
+  return restaurants;
 }
 
-export async function atualizarProduto(produto: Produto): Promise<void> {
-  await salvarProduto(produto);
+export async function atualizarRestaurant(restaurant: Restaurant): Promise<void> {
+  await salvarRestaurant(restaurant);
 }
 
-export async function excluirProdutoPorId(id: string): Promise<void> {
-  const produtos = await listarProdutos();
-  const atualizados = produtos.filter(p => p.id !== id);
+export async function excluirRestaurantPorId(id: string): Promise<void> {
+  const restaurants = await listarRestaurants();
+  const atualizados = restaurants.filter(p => p.id !== id);
   await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(atualizados));
 }

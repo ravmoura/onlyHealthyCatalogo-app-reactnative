@@ -1,15 +1,14 @@
 import { StyleSheet } from "react-native";
 
 export const inputMenor_styles = StyleSheet.create({
-  container: {
-        //flex: 1, // Arrange children horizontally
-        marginTop: 10,
-        width: '50%',
-        justifyContent: 'space-between', // Distribute space around items
-        flex: 1, // Each column takes equal space        
-        height: 58,
-        marginLeft: 5,                
-        //backgroundColor: '#992032'
+  container: {    
+    marginTop: 5,
+    width: '50%',
+    justifyContent: 'space-between', // Distribute space around items
+    flex: 1, // Each column takes equal space        
+    height: 65,
+    marginLeft: 5,                
+    //backgroundColor: '#992032',
   },  
   label: {
     fontSize: 14,
@@ -22,8 +21,7 @@ export const inputMenor_styles = StyleSheet.create({
     marginTop: 4,
   },
   input: {
-      flex: 1,
-      //marginRight: 5,
+      flex: 1,      
       width: "100%",
       borderRadius: 8,
       borderStyle: "solid",
@@ -35,5 +33,6 @@ export const inputMenor_styles = StyleSheet.create({
       fontSize: 12,
       fontFamily: "Inter-Regular",
       fontWeight: 'normal',  
+      paddingVertical: 5,
   },
 });

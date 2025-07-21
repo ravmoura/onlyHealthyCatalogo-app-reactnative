@@ -30,7 +30,8 @@ export const global_styles = StyleSheet.create({
     fontFamily: "SF Pro",
     color: "#4e4f56",    
     textAlign: "center",
-    height: 55
+    height: 45,
+    //backgroundColor: '#fff768'
   },
   infoText: {
     width: '100%',
@@ -39,7 +40,7 @@ export const global_styles = StyleSheet.create({
     fontFamily: "Inter-Regular",
     color: "#000",
     textAlign: "left",
-    height: 40
+    height: 30
   },
   footer: {
     borderTopWidth: 1,
@@ -84,5 +85,12 @@ export const global_styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 16,
     textAlign: 'center'
-  }
+  },
+  espacamento: {
+    height: '3%', 
+    backgroundColor: 'transparent' 
+  },
+  margemActivityIndicator: {
+      marginTop: 16,    
+  },
 });

@@ -11,7 +11,7 @@ import { global_styles } from '../styles/global';
 import { Input } from '../components/Input';
 import { searchCep_styles } from '../styles/searchCep';
 import { Address } from '../types/adress';
-import { GeoLocalizacao, getGeoLocationFromCep } from '../types/geolocalizacao';
+import { GeoLocalizacao } from '../types/geolocalizacao';
 import { EditButton } from '../components/EditButton';
 import { Restaurant } from '../types/restaurant';
 import { useNavigation } from '@react-navigation/native';
@@ -19,6 +19,8 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../types/navigation';
 import { AppStackParamList } from '../types/navigation';
 import { Button } from '../components/Button';
+import { BuscaCepButton } from '../components/buscaCepButton';
+import { getGeoLocationFromCep } from '../services/searchCepService';
 
 export default function SearchCepScreen() {
   const navigationApp = useNavigation<NativeStackNavigationProp<AppStackParamList>>();
@@ -45,7 +47,7 @@ export default function SearchCepScreen() {
         uf: geo.uf,
       });
 
-      setRestaurant ({        
+      setRestaurant ({                
         id: '',
         nome: '',
         cnpj: '',
@@ -99,10 +101,11 @@ export default function SearchCepScreen() {
         </MapView>
         {address && (
             <View style={searchCep_styles.addressContainer}>
-                <Text style={searchCep_styles.addressText}>Rua: {address.logradouro}</Text>
+                <EditButton title="Carregar dados" onPress={handleAdress}/>
+                <Text style={searchCep_styles.addressText}>Lograd.: {address.logradouro}</Text>
                 <Text style={searchCep_styles.addressText}>Bairro: {address.bairro}</Text>
                 <Text style={searchCep_styles.addressText}>Cidade: {address.localidade} - {address.uf}</Text>
-                <EditButton title="Carregar dados" onPress={handleAdress} />
+                <Text style={searchCep_styles.addressText}>Lat./Long.: {location.latitude} / {location.longitude}</Text>                
             </View>
         )}
         </>

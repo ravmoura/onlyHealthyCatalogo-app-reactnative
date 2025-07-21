@@ -38,9 +38,9 @@ export function Routes() {
     <NavigationContainer>
       {/* isAuthenticated ? ( */}
         <AppStack.Navigator screenOptions={defaultAppStackScreenOptions} >
-          <AppStack.Screen name="Home" component={HomeScreen} options={{ title: "Home" }} />
-          <AppStack.Screen name="Login" component={LoginScreen} options={{ title: "Login" }} />
+          <AppStack.Screen name="Home" component={HomeScreen} options={{ title: "Home" }} />          
           <AppStack.Screen name="Register" component={RegisterScreen} options={{ title: "Cadastro de Usuários" }} />
+          <AppStack.Screen name="Login" component={LoginScreen} options={{ title: "Login" }} />
           <AppStack.Screen name="StoreRegister" component={StoreRegisterScreen}  options={{ title: "Cadastro de Restaurantes" }} />              
           <AppStack.Screen name="SearchCep" component={SearchCepScreen}  options={{ title: "Buscar CEP" }} />              
           <AppStack.Screen name="ProductRegister" component={ProductRegisterScreen} options={{ title: "Cadastro de Pratos" }}/>
